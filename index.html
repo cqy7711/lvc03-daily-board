@@ -238,7 +238,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     </div>
     <div class="panel full" style="margin-bottom:20px">
       <div style="overflow-x:auto;max-height:560px;overflow-y:auto">
-        <table id="tsTbl"><thead><tr><th>日期</th><th>姓名</th><th>项目</th><th style="text-align:center">正常工时(h)</th><th style="text-align:center">加班(h)</th><th style="text-align:center">合计(h)</th><th style="text-align:center">操作</th></tr></thead><tbody></tbody></table>
+        <table id="tsTbl"><thead><tr><th>日期</th><th>姓名</th><th>项目</th><th style="text-align:center" title="每天正常工作时间（8 小时为满勤）">正常工时(h)</th><th style="text-align:center" title="额外加班时间（加班不记打车费，仅记工时）">加班(h)</th><th style="text-align:center" title="正常工时 + 加班工时">合计(h)</th><th style="text-align:center">操作</th></tr></thead><tbody></tbody></table>
       </div>
     </div>
   </div>
@@ -260,6 +260,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       <h3>按项目工时汇总</h3>
       <div style="overflow-x:auto">
         <table id="coTbl"><thead><tr><th>项目号</th><th>项目名称</th><th style="text-align:center">正常工时(h)</th><th style="text-align:center">加班(h)</th><th style="text-align:center">合计(h)</th></tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+    <div class="panel full" style="margin-bottom:20px">
+      <h3>按人 × 项目工时明细</h3>
+      <div style="overflow-x:auto;max-height:520px;overflow-y:auto">
+        <table id="coTblPersonProj"><thead><tr><th>姓名</th><th>项目号</th><th>项目名称</th><th style="text-align:center">正常工时(h)</th><th style="text-align:center">加班(h)</th><th style="text-align:center">合计(h)</th></tr></thead><tbody></tbody></table>
       </div>
     </div>
   </div>
@@ -802,9 +808,9 @@ function renderTimesheet(){
       <td>${esc(t.date||'')}</td>
       <td>${esc(t.name||'')}</td>
       <td>${esc(pjNameByCode(t.project_code))}</td>
-      <td style="text-align:center">${+t.hours||0}</td>
-      <td style="text-align:center">${ot}</td>
-      <td style="text-align:center;font-weight:600">${total}</td>
+      <td style="text-align:center" title="正常工时 ${+t.hours||0}h">${+t.hours||0}</td>
+      <td style="text-align:center" title="加班工时 ${+t.overtime||0}h">${ot}</td>
+      <td style="text-align:center;font-weight:600" title="正常 ${+t.hours||0}h + 加班 ${+t.overtime||0}h = 合计 ${total}h">${total}</td>
       <td style="text-align:center"><button class="mini" data-act="edit" data-id="${t.id}">编辑</button> <button class="mini danger" data-act="del" data-id="${t.id}">删除</button></td>
     </tr>`;
   }).join('');
@@ -908,6 +914,26 @@ function renderCost(){
   if(!rows.length){ tbl.innerHTML='<tr><td colspan="5" style="text-align:center;color:#999;padding:28px">暂无数据</td></tr>'; }
   else tbl.innerHTML=rows.map(r=>`<tr>
     <td>${esc(r.code)}</td><td>${esc(r.name)}</td>
+    <td style="text-align:center">${r.hours}</td>
+    <td style="text-align:center;color:#e5484d">${r.overtime}</td>
+    <td style="text-align:center;font-weight:600">${r.hours+r.overtime}</td>
+  </tr>`).join('');
+
+  // 按人 × 项目 交叉核算
+  const ppm={}; // key = name + '||' + project_code
+  list.forEach(t=>{
+    const key=(t.name||'未知')+'||'+(t.project_code||'未分配');
+    if(!ppm[key]) ppm[key]={name:t.name||'未知', code:t.project_code||'未分配', pname:pjNameByCode(t.project_code||'')||'未分配', hours:0, overtime:0};
+    ppm[key].hours += (+t.hours||0);
+    ppm[key].overtime += (+t.overtime||0);
+  });
+  const ppRows=Object.values(ppm).sort((a,b)=>(b.hours+b.overtime)-(a.hours+a.overtime) || a.name.localeCompare(b.name));
+  const tbl2=document.getElementById('coTblPersonProj');
+  if(!ppRows.length){ tbl2.innerHTML='<tr><td colspan="6" style="text-align:center;color:#999;padding:28px">暂无数据</td></tr>'; }
+  else tbl2.innerHTML=ppRows.map(r=>`<tr>
+    <td style="white-space:nowrap">${esc(r.name)}</td>
+    <td style="white-space:nowrap;font-weight:600">${esc(r.code)}</td>
+    <td>${esc(r.pname)}</td>
     <td style="text-align:center">${r.hours}</td>
     <td style="text-align:center;color:#e5484d">${r.overtime}</td>
     <td style="text-align:center;font-weight:600">${r.hours+r.overtime}</td>
