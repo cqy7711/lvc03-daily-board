@@ -410,6 +410,14 @@ async function apiDeleteTs(id){
 }
 function pjByCode(code){ return projects.find(p=>p.code===code); }
 function pjNameByCode(code){ const p=pjByCode(code); return p?p.name:code; }
+// 按 日期+姓名 汇总该人当天的工时（正常 + 加班）
+function timesheetOf(date, name){
+  const rows = timesheets.filter(t=>t.date===date && t.name===name);
+  if(!rows.length) return null;
+  const hours = rows.reduce((s,t)=>s+(+t.hours||0),0);
+  const overtime = rows.reduce((s,t)=>s+(+t.overtime||0),0);
+  return { hours, overtime, total: hours+overtime, count: rows.length };
+}
 
 const PALETTE = ['#2e75b6','#ed7d31','#70ad47','#ffc000','#5b9bd5','#7030a0','#c0504d','#4bacc6','#f79646','#9bbb59'];
 const CAT_COLOR = {'短剧':'#2e75b6','短片':'#5b9bd5','建筑项目':'#ed7d31','建筑微电影':'#7030a0','运营':'#70ad47','其他':'#9aa3ad'};
@@ -484,19 +492,21 @@ function renderTable(){
 
   const colHead=(key,label)=>{ const arrow = sortKey===key ? `<span class="arrow">${sortDir>0?'▲':'▼'}</span>`:''; return `<th data-k="${key}">${label}${arrow}</th>`; };
 
-  const thead = `<tr>${colHead('date','日期')}${colHead('name','名字')}${colHead('project','项目')}<th>类别</th>${colHead('content','工作内容')}${colHead('reviewer','审核人')}${colHead('status','状态')}<th></th></tr>`;
+  const thead = `<tr>${colHead('date','日期')}${colHead('name','名字')}${colHead('project','项目')}<th>类别</th>${colHead('content','工作内容')}${colHead('reviewer','审核人')}${colHead('status','状态')}<th>工时</th><th></th></tr>`;
   document.querySelector('#tbl thead').innerHTML = thead;
   document.querySelectorAll('#tbl thead th[data-k]').forEach(th=>{
     th.onclick=()=>{ const k=th.dataset.k; if(sortKey===k) sortDir*=-1; else {sortKey=k; sortDir=1;} renderTable(); };
   });
 
   if(!d.length){
-    document.querySelector('#tbl tbody').innerHTML = `<tr><td colspan="8"><div class="empty"><div class="big">🗂️</div>暂无匹配的日报记录</div></td></tr>`;
+    document.querySelector('#tbl tbody').innerHTML = `<tr><td colspan="9"><div class="empty"><div class="big">🗂️</div>暂无匹配的日报记录</div></td></tr>`;
     return;
   }
   document.querySelector('#tbl tbody').innerHTML = d.map((r)=>{
     const realIdx = data.indexOf(r);
     const cat = catOf(r.project);
+    const ts = timesheetOf(r.date, r.name);
+    const tsCell = ts ? `<span title="正常 ${ts.hours}h + 加班 ${ts.overtime}h">${ts.total}h</span>` : `<span style="color:#ccc" title="该人当日未填写工时">—</span>`;
     return `<tr>
       <td style="white-space:nowrap">${esc(r.date)}</td>
       <td style="white-space:nowrap">${esc(r.name)}</td>
@@ -505,6 +515,7 @@ function renderTable(){
       <td style="max-width:420px">${esc(r.content)}</td>
       <td>${esc(r.reviewer)}</td>
       <td>${statusBadge(r.status)}</td>
+      <td style="white-space:nowrap;text-align:center;font-weight:600;color:${ts?'#1f4e79':'#ccc'}">${tsCell}</td>
       <td style="white-space:nowrap">
         <button class="ghost" style="padding:3px 8px;font-size:12px" onclick="editRow(${realIdx})">编辑</button>
         <button class="ghost" style="padding:3px 8px;font-size:12px;color:var(--red)" onclick="delRow(${realIdx})">删除</button>
@@ -954,6 +965,7 @@ async function reloadTimesheets(){
   renderTimesheet();
   renderCost();
   renderProjects();
+  renderTable();
 }
 async function reloadProjects(){
   projects = await fetchProjects();
