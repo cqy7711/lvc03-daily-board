@@ -64,6 +64,10 @@ header::after{content:'';position:absolute;right:-60px;top:-60px;width:240px;hei
 header h1{font-size:21px;font-weight:700;letter-spacing:.5px}
 header .sub{font-size:12.5px;opacity:.8;margin-top:5px}
 .wrap{max-width:1200px;margin:0 auto;padding:22px 20px}
+.navtabs{display:flex;gap:4px;margin-bottom:18px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:var(--shadow)}
+.navtabs button{flex:1;font-size:14px;font-weight:600;padding:10px 16px;border:none;border-radius:8px;background:transparent;color:var(--muted);cursor:pointer;transition:all .18s}
+.navtabs button:hover{color:var(--blue);background:#f0f5fb}
+.navtabs button.active{background:linear-gradient(135deg,#1f4e79,#2e75b6);color:#fff;box-shadow:0 2px 8px rgba(46,117,182,.3)}
 .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow)}
 .toolbar select,.toolbar input,.toolbar button{font-size:13px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);transition:all .15s}
 .toolbar select:focus,.toolbar input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(46,117,182,.12)}
@@ -179,37 +183,98 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   </div>
 </header>
 <div class="wrap">
-  <div class="toolbar">
-    <select id="fMonth"><option value="">全部月份</option></select>
-    <select id="fName"><option value="">全部人员</option></select>
-    <button id="btnReset" class="ghost">重置筛选</button>
-    <div class="search"><input type="text" id="fSearch" placeholder="搜索名字 / 项目 / 工作内容…"></div>
-    <button id="btnImport" class="ghost">导入 Excel/CSV</button>
-    <input type="file" id="importFile" accept=".xlsx,.xls,.csv" style="display:none">
-    <button id="btnExport" class="ghost">导出 CSV</button>
-    <button id="btnExportJson" class="ghost">导出 JSON</button>
-    <button id="btnClear" class="ghost" style="color:var(--red);border-color:#f3c1c1">清空数据</button>
+  <div class="navtabs" id="navTabs">
+    <button class="active" data-view="daily">日报明细</button>
+    <button data-view="timesheet">工时台账</button>
+    <button data-view="cost">工时核算</button>
+    <button data-view="projects">项目号管理</button>
   </div>
 
-  <div class="catbar" id="catTabs"></div>
-  <div class="subbar" id="projTabs"></div>
-
-  <div class="cards" id="cards"></div>
-
-  <div class="grid2">
-    <div class="panel"><h3>各人员工作天数</h3><div id="chartDays" class="chart"></div></div>
-    <div class="panel"><h3>各人员参与项目数</h3><div id="chartProj" class="chart"></div></div>
-    <div class="panel"><h3>各人员通过率</h3><div id="chartRate" class="chart"></div></div>
-    <div class="panel"><h3>项目工作量分布</h3><div id="chartProjDist" class="chart"></div></div>
-  </div>
-
-  <div class="panel full" style="margin-bottom:20px">
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
-      <h3 style="margin:0">日报明细</h3>
-      <div class="tabbar" id="nameTabs" style="margin:0"></div>
+  <!-- 视图1：日报明细 -->
+  <div class="view" id="view-daily">
+    <div class="toolbar">
+      <select id="fMonth"><option value="">全部月份</option></select>
+      <select id="fName"><option value="">全部人员</option></select>
+      <button id="btnReset" class="ghost">重置筛选</button>
+      <div class="search"><input type="text" id="fSearch" placeholder="搜索名字 / 项目 / 工作内容…"></div>
+      <button id="btnImport" class="ghost">导入 Excel/CSV</button>
+      <input type="file" id="importFile" accept=".xlsx,.xls,.csv" style="display:none">
+      <button id="btnExport" class="ghost">导出 CSV</button>
+      <button id="btnExportJson" class="ghost">导出 JSON</button>
+      <button id="btnClear" class="ghost" style="color:var(--red);border-color:#f3c1c1">清空数据</button>
     </div>
-    <div style="overflow-x:auto;max-height:520px;overflow-y:auto;margin-top:12px">
-      <table id="tbl"><thead></thead><tbody></tbody></table>
+
+    <div class="catbar" id="catTabs"></div>
+    <div class="subbar" id="projTabs"></div>
+
+    <div class="cards" id="cards"></div>
+
+    <div class="grid2">
+      <div class="panel"><h3>各人员工作天数</h3><div id="chartDays" class="chart"></div></div>
+      <div class="panel"><h3>各人员参与项目数</h3><div id="chartProj" class="chart"></div></div>
+      <div class="panel"><h3>各人员通过率</h3><div id="chartRate" class="chart"></div></div>
+      <div class="panel"><h3>项目工作量分布</h3><div id="chartProjDist" class="chart"></div></div>
+    </div>
+
+    <div class="panel full" style="margin-bottom:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <h3 style="margin:0">日报明细</h3>
+        <div class="tabbar" id="nameTabs" style="margin:0"></div>
+      </div>
+      <div style="overflow-x:auto;max-height:520px;overflow-y:auto;margin-top:12px">
+        <table id="tbl"><thead></thead><tbody></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 视图2：工时台账 -->
+  <div class="view" id="view-timesheet" style="display:none">
+    <div class="toolbar">
+      <select id="tsMonth"><option value="">全部月份</option></select>
+      <select id="tsName"><option value="">全部人员</option></select>
+      <button id="tsReset" class="ghost">重置</button>
+      <span style="flex:1"></span>
+      <button id="tsAdd" style="background:var(--blue);color:#fff;border:none;border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:500">＋ 新增工时</button>
+    </div>
+    <div class="panel full" style="margin-bottom:20px">
+      <div style="overflow-x:auto;max-height:560px;overflow-y:auto">
+        <table id="tsTbl"><thead><tr><th>日期</th><th>姓名</th><th>项目</th><th style="text-align:center">正常工时(h)</th><th style="text-align:center">加班(h)</th><th style="text-align:center">合计(h)</th><th style="text-align:center">操作</th></tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 视图3：工时核算 -->
+  <div class="view" id="view-cost" style="display:none">
+    <div class="toolbar">
+      <select id="coMonth"><option value="">全部月份</option></select>
+      <button id="coReset" class="ghost">重置</button>
+      <span style="flex:1"></span>
+      <span style="font-size:13px;color:var(--muted)">按项目汇总工时投入（正常 / 加班 / 总计）</span>
+    </div>
+    <div class="panel full" style="margin-bottom:20px" id="coSummary"></div>
+    <div class="grid2">
+      <div class="panel"><h3>各人员总工时</h3><div id="coChartHours" class="chart"></div></div>
+      <div class="panel"><h3>各项目总工时</h3><div id="coChartProj" class="chart"></div></div>
+    </div>
+    <div class="panel full" style="margin-bottom:20px">
+      <h3>按项目工时汇总</h3>
+      <div style="overflow-x:auto">
+        <table id="coTbl"><thead><tr><th>项目号</th><th>项目名称</th><th style="text-align:center">正常工时(h)</th><th style="text-align:center">加班(h)</th><th style="text-align:center">合计(h)</th></tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 视图4：项目号管理 -->
+  <div class="view" id="view-projects" style="display:none">
+    <div class="toolbar">
+      <span style="font-size:13px;color:var(--muted)">维护项目号 ↔ 项目名对照表（工时台账按项目号填写）</span>
+      <span style="flex:1"></span>
+      <button id="pjAdd" style="background:var(--blue);color:#fff;border:none;border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:500">＋ 新增项目</button>
+    </div>
+    <div class="panel full" style="margin-bottom:20px">
+      <div style="overflow-x:auto;max-height:560px;overflow-y:auto">
+        <table id="pjTbl"><thead><tr><th>项目号</th><th>项目名称</th><th>类别</th><th style="text-align:center">累计工时(h)</th><th style="text-align:center">操作</th></tr></thead><tbody></tbody></table>
+      </div>
     </div>
   </div>
 
@@ -235,6 +300,35 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   </div>
 </div>
 
+<div class="modal" id="tsModal">
+  <div class="box">
+    <h3 id="tsModalTitle">新增工时</h3>
+    <label>日期</label><input type="date" id="tsmDate">
+    <label>姓名</label><select id="tsmName"></select>
+    <label>项目号</label><select id="tsmProj"></select>
+    <label>正常工时（小时）</label><input type="number" id="tsmHours" min="0" step="0.5" placeholder="如 8">
+    <label>加班工时（小时）</label><input type="number" id="tsmOvertime" min="0" step="0.5" placeholder="如 2，无则留空">
+    <label>备注</label><input type="text" id="tsmRemark" placeholder="选填">
+    <div class="btns">
+      <button class="ghost" id="tsBtnCancel">取消</button>
+      <button id="tsBtnSave">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="pjModal">
+  <div class="box">
+    <h3 id="pjModalTitle">新增项目</h3>
+    <label>项目号</label><input type="text" id="pjmCode" placeholder="如 P025">
+    <label>项目名称</label><input type="text" id="pjmName" placeholder="项目名称">
+    <label>类别</label><input type="text" id="pjmCat" list="catList" placeholder="选填，如 短剧/短片/建筑项目"><datalist id="catList"></datalist>
+    <div class="btns">
+      <button class="ghost" id="pjBtnCancel">取消</button>
+      <button id="pjBtnSave">保存</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const DEFAULT_DATA = [{"date":"2026-06-29","name":"林洛逸","project":"暗夜玫瑰","content":"35集完成补抽+剪辑1分29秒，36集完成抽卡+剪辑58秒","reviewer":"林洛逸","status":"通过"},{"date":"2026-06-29","name":"杜磊","project":"暗夜玫瑰","content":"27集抽卡共9个片段剪辑1分20秒，21集补3个片段并完成剪辑修改","reviewer":"林洛逸","status":"通过"},{"date":"2026-06-29","name":"龙婧","project":"一夜承欢","content":"场景+人物素材修改补充：补了7个场景17个人物素材","reviewer":"龙婧","status":"通过"},{"date":"2026-06-29","name":"李庞辉","project":"一夜承欢","content":"13集抽卡+剪辑1分44秒","reviewer":"龙婧","status":"通过"},{"date":"2026-06-29","name":"孙佩宁","project":"一夜承欢","content":"10集抽卡","reviewer":"龙婧","status":"不通过"},{"date":"2026-06-29","name":"陈俊宇","project":"一夜承欢","content":"第11集抽卡剪辑了一半","reviewer":"龙婧","status":"通过"},{"date":"2026-06-30","name":"林洛逸","project":"暗夜玫瑰","content":"37集完成抽卡+剪辑1分7秒，工作日表+任务分配表统计","reviewer":"林洛逸","status":"通过"},{"date":"2026-06-30","name":"杜磊","project":"暗夜玫瑰","content":"28集抽卡6个片段剪辑1分11秒，29集抽卡5个片段剪辑1分28秒，补3个场景2个人物素材","reviewer":"林洛逸","status":"通过"},{"date":"2026-06-30","name":"龙婧","project":"一夜承欢","content":"补12个人物素材，视频制作SOP整理","reviewer":"龙婧","status":"通过"},{"date":"2026-06-30","name":"李庞辉","project":"一夜承欢","content":"14集抽卡+剪辑1分36秒9个片段补1个镜头","reviewer":"龙婧","status":"通过"},{"date":"2026-06-30","name":"孙佩宁","project":"一夜承欢","content":"20集翻译分镜表站位图，20抽卡未完成补1道具资产","reviewer":"龙婧","status":"不通过"},{"date":"2026-06-30","name":"陈俊宇","project":"一夜承欢","content":"补齐第11集剪辑第12集抽卡","reviewer":"龙婧","status":"通过"},{"date":"2026-07-01","name":"林洛逸","project":"暗夜玫瑰","content":"38集完成抽卡+剪辑1分10秒补充2个人物2个道具","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-01","name":"杜磊","project":"暗夜玫瑰","content":"30集抽卡8个片段剪辑1分24秒补2个人物2个道具4个场景资产，11集抽卡9个片段剪辑1分31秒补1个场景资产","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-01","name":"龙婧","project":"一夜承欢","content":"16集抽卡14片段剪辑2分11秒补3个道具资产","reviewer":"龙婧","status":"通过"},{"date":"2026-07-01","name":"李庞辉","project":"一夜承欢","content":"15集抽卡14个片段剪辑1分26秒","reviewer":"龙婧","status":"通过"},{"date":"2026-07-01","name":"孙佩宁","project":"一夜承欢","content":"20集抽卡6个片段","reviewer":"龙婧","status":"通过"},{"date":"2026-07-01","name":"陈俊宇","project":"一夜承欢","content":"38集抽卡12集剪辑","reviewer":"龙婧","status":"通过"},{"date":"2026-07-02","name":"林洛逸","project":"暗夜玫瑰","content":"39集完成抽卡+剪辑1分15秒补充1个人物","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-02","name":"杜磊","project":"暗夜玫瑰","content":"1集抽卡13个片段剪辑1分30秒补1个场景1个道具，2集抽卡5个片段剪辑1分31秒补1个场景","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-02","name":"龙婧","project":"一夜承欢","content":"17集抽卡+剪辑2分45秒补1个场景2个人物","reviewer":"龙婧","status":"通过"},{"date":"2026-07-02","name":"李庞辉","project":"一夜承欢","content":"30集抽卡7个片段30集剪辑1分24秒","reviewer":"龙婧","status":"通过"},{"date":"2026-07-02","name":"孙佩宁","project":"一夜承欢","content":"21集翻译分镜表抽卡部分未完成","reviewer":"龙婧","status":"通过"},{"date":"2026-07-03","name":"林洛逸","project":"暗夜玫瑰","content":"40集完成抽卡9个片段+剪辑1分19秒，41集抽卡8个片段补充3个场景2个道具","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-03","name":"杜磊","project":"暗夜玫瑰","content":"3集抽卡8个片段剪辑1分26秒补1个场景1个人物，4集抽卡9个片段剪辑1分19秒补2个人物2个场景","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-03","name":"龙婧","project":"一夜承欢","content":"18集抽卡9个片段+剪辑1分35秒，19集抽卡7个片段补一个场景","reviewer":"龙婧","status":"通过"},{"date":"2026-07-03","name":"李庞辉","project":"一夜承欢","content":"31集抽卡+剪辑1分18秒9个片段","reviewer":"龙婧","status":"通过"},{"date":"2026-07-03","name":"孙佩宁","project":"一夜承欢","content":"21集抽卡待补全2个道具1个场景","reviewer":"龙婧","status":"不通过"},{"date":"2026-07-04","name":"林洛逸","project":"暗夜玫瑰","content":"41集完成剪辑1分16秒，42集完成抽卡10个片段+剪辑1分22秒补充2个道具","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-04","name":"杜磊","project":"暗夜玫瑰","content":"5集抽卡9个片段剪辑1分13秒补1个人物1个场景","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-04","name":"龙婧","project":"一夜承欢","content":"剪辑第20集1分23秒抽卡19-4共4个片段+剪辑2分40秒补充两个场景，一夜承欢全文中英对照翻译","reviewer":"龙婧","status":"通过"},{"date":"2026-07-04","name":"李庞辉","project":"一夜承欢","content":"32集抽卡13个片段+剪辑1分53秒","reviewer":"龙婧","status":"通过"},{"date":"2026-07-06","name":"林洛逸","project":"暗夜玫瑰","content":"日表+分配表调整43集完成抽卡9个片段+剪辑1分21秒补充2个场景1个道具44集完成抽卡3个片段","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-06","name":"杜磊","project":"未完成的关卡","content":"抽卡11个片段补3个人物5个场景2个道具3619积分","reviewer":"kris","status":"通过"},{"date":"2026-07-06","name":"龙婧","project":"一夜承欢","content":"10集抽卡10个片段+剪辑1分56秒暗夜玫瑰海报参考一夜承欢海报参考","reviewer":"龙婧","status":"通过"},{"date":"2026-07-06","name":"李庞辉","project":"一夜承欢","content":"33集抽卡12个片段+剪辑1分52秒","reviewer":"龙婧","status":"通过"},{"date":"2026-07-06","name":"孙佩宁","project":"换心迷局","content":"换心迷局+复仇女王完整版剪接tiktok账号运营播放互评几十条","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-07","name":"林洛逸","project":"暗夜玫瑰","content":"44集完成抽卡4个片段+剪辑1分24秒45集完成抽卡9个片段+剪辑1分17秒补充1个人物","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-07","name":"杜磊","project":"未完成的关卡","content":"抽卡13个片段剪辑2分20秒补6个人物6个场景2个道具4745积分","reviewer":"kris","status":"通过"},{"date":"2026-07-07","name":"龙婧","project":"一夜承欢","content":"第一集抽卡14个片段+剪辑1分46秒补充9张场景图1张道具1个人物制作海报分配表调整","reviewer":"龙婧","status":"通过"},{"date":"2026-07-07","name":"李庞辉","project":"一夜承欢","content":"34集抽卡13个片段+剪辑2分05秒补充1张场景图","reviewer":"龙婧","status":"通过"},{"date":"2026-07-07","name":"孙佩宁","project":"外包短剧","content":"五部外包短剧字幕声音检查审核tiktok账号运营统计及播放互评","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-08","name":"林洛逸","project":"暗夜玫瑰","content":"46集完成抽卡10个片段+剪辑1分25秒补充4个人物","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-08","name":"杜磊","project":"暗夜玫瑰","content":"6集抽卡9个片段剪辑1分14秒7集抽卡6个片段补4个人物1个道具1个场景","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-08","name":"龙婧","project":"一夜承欢","content":"第一集剪辑修改重抽一个落水片段第二集抽卡9个片段剧集资产核对滤镜问题修改21-26集剧本修改生成分镜脚本","reviewer":"龙婧","status":"通过"},{"date":"2026-07-08","name":"李庞辉","project":"一夜承欢","content":"35集抽卡15个片段+剪辑1分52秒","reviewer":"龙婧","status":"通过"},{"date":"2026-07-08","name":"孙佩宁","project":"外包短剧","content":"声音资产11个tiktok账号运营播放互评","reviewer":"林洛逸","status":"不通过"},{"date":"2026-07-09","name":"林洛逸","project":"暗夜玫瑰","content":"47集完成抽卡12个片段+剪辑1分19秒48集完成抽卡10个片段补充1个人物1个场景1个道具","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-09","name":"杜磊","project":"暗夜玫瑰","content":"7集剪辑1分14秒8集抽卡7个片段剪辑1分17秒","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-09","name":"龙婧","project":"一夜承欢","content":"第21集抽卡13个片段剪辑1分49秒第22集抽卡10个片段剪辑1分30秒","reviewer":"龙婧","status":"通过"},{"date":"2026-07-09","name":"李庞辉","project":"一夜承欢","content":"36集抽卡15个片段剪辑1分28秒补1个道具","reviewer":"龙婧","status":"通过"},{"date":"2026-07-09","name":"孙佩宁","project":"外包短剧","content":"声音资产+tiktok账号运营播放互评","reviewer":"林洛逸","status":"不通过"},{"date":"2026-07-10","name":"林洛逸","project":"暗夜玫瑰","content":"The Hunter's Vampire Husband模板切片20-30s共5条48集完成剪辑1分32秒49集完成抽卡2个片段对接换心迷局检查音色库审核","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-10","name":"杜磊","project":"暗夜玫瑰","content":"Born Backwards The Cursed King切片20-30s共6条9集10集抽卡12个片段剪辑1分26秒1分11秒补1个人物","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-10","name":"龙婧","project":"一夜承欢","content":"The Beast's Exclusive Medicine模板切片20-30s共7条23集抽卡16个片段剪辑1分36秒补充2个道具剪辑换心迷局16-30检查","reviewer":"龙婧","status":"通过"},{"date":"2026-07-10","name":"李庞辉","project":"一夜承欢","content":"37集抽卡11个片段+剪辑1分20秒","reviewer":"龙婧","status":"通过"},{"date":"2026-07-10","name":"孙佩宁","project":"外包短剧","content":"音色库资产收集一部外包剧剪串tiktok账号运营评论","reviewer":"林洛逸","status":"不通过"},{"date":"2026-07-11","name":"龙婧","project":"一夜承欢","content":"24集抽卡13个片段剪辑1分32秒补充2个场景图2个人物资产","reviewer":"龙婧","status":"通过"},{"date":"2026-07-13","name":"林洛逸","project":"暗夜玫瑰","content":"49集完成抽卡9个片段+剪辑1分23秒50集完成抽卡9个片段补充2个人物1个场景","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-13","name":"杜磊","project":"请假","content":"请假","reviewer":"沈屯","status":"通过"},{"date":"2026-07-13","name":"龙婧","project":"一夜承欢","content":"25集完成抽卡7个片段+剪辑1分27秒补充2个场景图1个人物资产1个道具图48集完成抽卡9个片段","reviewer":"龙婧","status":"通过"},{"date":"2026-07-13","name":"李庞辉","project":"一夜承欢","content":"39集抽卡7个片段+剪辑1分10秒","reviewer":"龙婧","status":"通过"},{"date":"2026-07-13","name":"孙佩宁","project":"运营","content":"tiktok账号运营评论三部剧剪串音色库资产收集更新","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-14","name":"林洛逸","project":"暗夜玫瑰","content":"50集完成抽卡2个片段+剪辑1分18秒18集完成抽卡10个片段+剪辑1分28秒补充1个场景","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-14","name":"杜磊","project":"请假","content":"请假","reviewer":"沈屯","status":"通过"},{"date":"2026-07-14","name":"龙婧","project":"一夜承欢","content":"48集补抽3段+剪辑1分53秒49集抽卡9段+剪辑1分39秒","reviewer":"龙婧","status":"通过"},{"date":"2026-07-14","name":"李庞辉","project":"一夜承欢","content":"40集抽卡14个片段+剪辑1分48秒","reviewer":"龙婧","status":"通过"},{"date":"2026-07-14","name":"孙佩宁","project":"运营","content":"tiktok账号运营评论两部剧剪串七部剧上传百度云音色库资产收集更新","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-15","name":"林洛逸","project":"暗夜玫瑰","content":"假面狼后模板切片20-30s共5条19集完成抽卡8个片段+剪辑1分30秒补充1个场景","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-15","name":"杜磊","project":"暗夜玫瑰","content":"12集抽卡9个片段补2个场景剪辑1分15秒13集抽卡7个片段补3个场景1个道具剪辑1分07秒第5集细节修改11-13集+21-30集超分","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-15","name":"龙婧","project":"一夜承欢","content":"50集抽卡18段+剪辑2分2秒补充3个场景修改5个人物素材","reviewer":"龙婧","status":"通过"},{"date":"2026-07-15","name":"李庞辉","project":"一夜承欢","content":"41集抽卡14个片段+剪辑1分51秒补充1个道具","reviewer":"龙婧","status":"通过"},{"date":"2026-07-15","name":"孙佩宁","project":"运营","content":"tiktok账号运营评论44集抽卡两个片段","reviewer":"龙婧","status":"通过"},{"date":"2026-07-16","name":"林洛逸","project":"暗夜玫瑰","content":"20集抽卡12个片段+剪辑1分22秒补充1个人物2个道具2个场景","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-16","name":"杜磊","project":"暗夜玫瑰","content":"14集抽卡7个片段剪辑1分21秒补2个场景1个人物15集抽卡4个片段","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-16","name":"龙婧","project":"一夜承欢","content":"第一集修改补抽5个片段修改2张人物素材图补充2个道具1个场景修改剪辑1分55秒第二集抽卡11个片段","reviewer":"龙婧","status":"通过"},{"date":"2026-07-16","name":"李庞辉","project":"一夜承欢","content":"42集抽卡12个片段+剪辑1分32秒","reviewer":"龙婧","status":"通过"},{"date":"2026-07-16","name":"孙佩宁","project":"运营","content":"tiktok账号运营评论44集抽卡3.5个片段","reviewer":"龙婧","status":"通过"},{"date":"2026-07-17","name":"林洛逸","project":"暗夜玫瑰","content":"50集修改剪辑1分44秒18-20集+30-40集超分","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-17","name":"杜磊","project":"暗夜玫瑰","content":"15集剪辑1分07秒补1个场景16集抽卡5个片段剪辑1分12秒","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-17","name":"龙婧","project":"一夜承欢","content":"第2集剪辑2分23秒第3集抽卡6个片段补充2个场景1个道具3个人物","reviewer":"龙婧","status":"通过"},{"date":"2026-07-17","name":"李庞辉","project":"一夜承欢","content":"第43集抽卡15个片段+剪辑1分50秒","reviewer":"龙婧","status":"通过"},{"date":"2026-07-17","name":"孙佩宁","project":"运营","content":"tiktok账号运营评论第44集抽卡1个片段+粗剪1分12秒","reviewer":"龙婧","status":"通过"},{"date":"2026-07-18","name":"林洛逸","project":"暗夜玫瑰","content":"20-30s切片5个海报2张40-50集超分","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-18","name":"杜磊","project":"暗夜玫瑰","content":"17集抽卡7个片段补1个场景1个道具剪辑1分40秒梦中恋人切片A49s+切片B54s","reviewer":"林洛逸","status":""},{"date":"2026-07-18","name":"龙婧","project":"一夜承欢","content":"调班至7月11日","reviewer":"沈屯","status":"通过"},{"date":"2026-07-18","name":"李庞辉","project":"一夜承欢","content":"45集抽卡7个片段+剪辑1分28秒46集抽卡6个片段","reviewer":"龙婧","status":"通过"},{"date":"2026-07-19","name":"杜磊","project":"暗夜玫瑰","content":"提示词整理整集素材视频内容汇总梦中恋人超分导出+昵称字幕","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-20","name":"林洛逸","project":"短片","content":"暗夜玫瑰内容整理短片剧本制作4部","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-20","name":"杜磊","project":"短片","content":"短片第一版剧本制作后来末日不在场","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-20","name":"龙婧","project":"一夜承欢","content":"第3集抽卡8个片段+剪辑1分40秒补充1个场景","reviewer":"龙婧","status":"通过"},{"date":"2026-07-20","name":"李庞辉","project":"一夜承欢","content":"46集完成抽卡13个片段+剪辑1分31秒47集11个片段+剪辑1分42秒","reviewer":"龙婧","status":"通过"},{"date":"2026-07-20","name":"孙佩宁","project":"运营","content":"tiktok账号运营评论播放44集补抽两个8秒片段完善44集剪辑1分21秒","reviewer":"龙婧","status":"通过"},{"date":"2026-07-21","name":"林洛逸","project":"饥饿的诸神","content":"更新短片剧本饥饿的诸神","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-21","name":"杜磊","project":"余响","content":"余响短片剧本制作修改表格制作分镜脚本制作","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-21","name":"龙婧","project":"一夜承欢","content":"换心迷局两次修改第4集抽卡16个片段剪辑1分44秒","reviewer":"龙婧","status":"通过"},{"date":"2026-07-21","name":"李庞辉","project":"一夜承欢","content":"26集抽卡13个片段剪辑1分32秒","reviewer":"龙婧","status":"通过"},{"date":"2026-07-21","name":"孙佩宁","project":"运营","content":"tiktok账号运营评论优化第44集剪辑","reviewer":"龙婧","status":"通过"},{"date":"2026-07-22","name":"林洛逸","project":"饥饿的诸神","content":"短片剧本饥饿的诸神生成11个场景资产","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-22","name":"杜磊","project":"饥饿的诸神","content":"短片剧本饥饿的诸神生成6个场景资产6个角色5个音色","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-22","name":"龙婧","project":"一夜承欢","content":"换心迷局剪辑修改第27集第44集审核修改意见超高层项目方案生成视频视觉参考收集第5集抽卡4段","reviewer":"龙婧","status":"通过"},{"date":"2026-07-22","name":"李庞辉","project":"一夜承欢","content":"27集抽卡共18个片段剪辑1分53秒","reviewer":"龙婧","status":"通过"},{"date":"2026-07-22","name":"孙佩宁","project":"运营","content":"tiktok账号运营评论44集剪辑修改待继续优化","reviewer":"龙婧","status":"通过"},{"date":"2026-07-23","name":"林洛逸","project":"饥饿的诸神","content":"短片剧本饥饿的诸神场景资产修改+增加","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-23","name":"杜磊","project":"饥饿的诸神","content":"短片剧本饥饿的诸神人物资产修改视频生成脚本制作","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-23","name":"龙婧","project":"迪拜高层建筑电影","content":"迪拜超高层建筑短片制作一夜承欢审核剪辑调整","reviewer":"龙婧","status":"通过"},{"date":"2026-07-23","name":"李庞辉","project":"一夜承欢","content":"28集抽卡18个片段+剪辑1分29秒","reviewer":"龙婧","status":"通过"},{"date":"2026-07-23","name":"孙佩宁","project":"运营","content":"tiktok账号运营互评播放填表44集优化待改","reviewer":"龙婧","status":"不通过"},{"date":"2026-07-24","name":"林洛逸","project":"饥饿的诸神","content":"短片剧本饥饿的诸神抽卡11个片段+剪辑54s","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-24","name":"杜磊","project":"第一次见你","content":"短片第一次见你人物场景素材补充及修改视频片段生成长度1分17秒","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-24","name":"龙婧","project":"迪拜高层建筑电影","content":"迪拜超高层建筑短片制作1分52秒29集审核剪辑调整","reviewer":"龙婧","status":"通过"},{"date":"2026-07-24","name":"李庞辉","project":"一夜承欢","content":"29集抽卡15个片段+补抽28集2个片段29集剪辑1分43秒","reviewer":"龙婧","status":"通过"},{"date":"2026-07-24","name":"孙佩宁","project":"运营","content":"tiktok账号运营互评播放填表44集剪辑优化待改未完","reviewer":"龙婧","status":"不通过"},{"date":"2026-07-25","name":"杜磊","project":"第一次见你","content":"短片第一次见你场景素材补充视频片段生成6段视频剧本修改校对新脚本制作及资产补充修改","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-27","name":"林洛逸","project":"饥饿的诸神","content":"补充1个场景抽卡7段","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-27","name":"杜磊","project":"第一次见你","content":"短片第一次见你年轻男女主音色选择及道具图生成梦中恋人成片修改及切片修改与制作短片制作方式修改分镜图制作视频生成","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-27","name":"龙婧","project":"迪拜高层建筑电影","content":"迪拜超高层建筑短片剧本脚本+图片生成第五集审核","reviewer":"龙婧","status":"通过"},{"date":"2026-07-27","name":"李庞辉","project":"一夜承欢","content":"第5集抽卡15个片段+剪辑1分33秒缺一个三人胎记镜头片段","reviewer":"龙婧","status":"待定"},{"date":"2026-07-27","name":"孙佩宁","project":"运营","content":"tiktok账号运营水军互评刷播补抽三个小片段镜头","reviewer":"龙婧","status":"不通过"},{"date":"2026-07-28","name":"林洛逸","project":"饥饿的诸神","content":"已请假","reviewer":"沈屯","status":"通过"},{"date":"2026-07-28","name":"杜磊","project":"第一次见你","content":"梦中恋人成片违规内容修改短片第一次见你分镜制作视频生成","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-28","name":"龙婧","project":"迪拜高层建筑电影","content":"迪拜超高层建筑短片剧本脚本+图片生成第44集审核第5集剪辑指导调整","reviewer":"龙婧","status":"通过"},{"date":"2026-07-28","name":"李庞辉","project":"一夜承欢","content":"一夜承欢第5集补片段抽卡8段+剪辑1分30秒","reviewer":"龙婧","status":"不通过"},{"date":"2026-07-28","name":"孙佩宁","project":"一夜承欢","content":"44集剪辑1分15秒完成待审核","reviewer":"龙婧","status":"通过"},{"date":"2026-07-29","name":"林洛逸","project":"饥饿的诸神","content":"抽卡17个片段短片总剪辑时长1分44秒补充1个场景2个道具1个人物检查暗夜玫瑰全集串联","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-29","name":"杜磊","project":"第一次见你","content":"短片剧本修改分镜场景修改视频片段重新生成剧本第四幕视频生成","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-29","name":"龙婧","project":"迪拜高层建筑电影","content":"建筑动画","reviewer":"龙婧","status":"通过"},{"date":"2026-07-29","name":"李庞辉","project":"一夜承欢","content":"一夜承欢渲染集数剩余2集未完成已渲染48集进行导出中","reviewer":"龙婧","status":"不通过"},{"date":"2026-07-29","name":"孙佩宁","project":"暗夜玫瑰","content":"暗夜玫瑰全集连串剪辑渲染超分","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-30","name":"林洛逸","project":"饥饿的诸神","content":"抽卡22个片段补充2个场景短片总剪辑时长2分12秒","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-30","name":"杜磊","project":"第一次见你","content":"短片剧本分镜场景道具补充生成视频片段生成剧本第四幕视频生成剪辑总时长3分31秒","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-30","name":"龙婧","project":"迪拜高层建筑电影","content":"总剪辑时长2分40秒","reviewer":"龙婧","status":"通过"},{"date":"2026-07-30","name":"孙佩宁","project":"一夜承欢","content":"一夜承欢1080p整理上传百度网盘b站注册答100题转正式会员","reviewer":"沈屯","status":""},{"date":"2026-07-31","name":"林洛逸","project":"饥饿的诸神","content":"抽卡20个片段短片总剪辑时长2分52秒","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-31","name":"杜磊","project":"第一次见你","content":"短片剧本分镜场景道具补充生成视频片段生成剧本第七八幕视频生成剪辑总时长5分31秒","reviewer":"林洛逸","status":"通过"},{"date":"2026-07-31","name":"龙婧","project":"迪拜高层建筑电影","content":"剪辑调整+ppt","reviewer":"龙婧","status":"通过"},{"date":"2026-07-31","name":"孙佩宁","project":"一夜承欢","content":"一夜承欢全集连串剪辑抖音ai创作大赛热门作品资料整理","reviewer":"沈屯","status":""},{"date":"2026-08-01","name":"林洛逸","project":"饥饿的诸神","content":"抽卡17个片段短片总剪辑时长3分23秒","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-01","name":"杜磊","project":"第一次见你","content":"第一次见你视频第九段生成视频剪辑标题设计","reviewer":"林洛逸","status":""},{"date":"2026-08-01","name":"龙婧","project":"迪拜高层建筑电影","content":"ppt制作+剪辑修改","reviewer":"龙婧","status":"通过"},{"date":"2026-08-03","name":"林洛逸","project":"饥饿的诸神","content":"抽卡23个片段短片总剪辑时长4分01秒","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-03","name":"杜磊","project":"第一次见你","content":"第一次见你便利贴等穿帮镜头大改片尾等内容修改与制作剪辑总时长5分58秒","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-03","name":"龙婧","project":"一夜承欢","content":"一夜承欢切片+爱奇艺填报","reviewer":"龙婧","status":"通过"},{"date":"2026-08-03","name":"孙佩宁","project":"运营","content":"抖音起号流程收集","reviewer":"沈屯","status":""},{"date":"2026-08-04","name":"林洛逸","project":"饥饿的诸神","content":"抽卡18个片段短片总剪辑时长4分43秒","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-04","name":"杜磊","project":"第一次见你","content":"视频配乐修改饥饿的诸神抽卡3段短片制作复盘","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-04","name":"龙婧","project":"风马旗","content":"youtube对标账号整理剧本构思","reviewer":"龙婧","status":"通过"},{"date":"2026-08-05","name":"林洛逸","project":"饥饿的诸神","content":"短篇抽卡3个视频两版剪辑5分19秒","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-05","name":"杜磊","project":"娘","content":"不在场剧本制作及修改黯夜玫瑰无字幕视频及字幕单独导出不在场部分参考图制作第一次见你配音修改","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-05","name":"龙婧","project":"风马旗","content":"剧本创作+资产制作+抖音账号背景头像收集","reviewer":"龙婧","status":"通过"},{"date":"2026-08-06","name":"林洛逸","project":"饥饿的诸神","content":"外出+会议记录+剧本更新","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-06","name":"杜磊","project":"娘","content":"资产制作+剧本修改","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-06","name":"龙婧","project":"风马旗","content":"外出+会议记录+资产制作","reviewer":"龙婧","status":"通过"},{"date":"2026-08-07","name":"林洛逸","project":"饥饿的诸神","content":"续集剧本更新","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-07","name":"杜磊","project":"娘","content":"剧本整篇大改人物场景道具配音修改及制作","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-07","name":"龙婧","project":"风马旗","content":"一夜承欢14.27.36剪辑修改补资产","reviewer":"龙婧","status":"通过"},{"date":"2026-08-06","name":"龙婧","project":"风马旗","content":"梳理剧情补充资产抽取片段6条画面AI感重待解决","reviewer":"龙婧","status":"通过"},{"date":"2026-08-10","name":"林洛逸","project":"梁林之路","content":"剧情梳理资料收集","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-10","name":"杜磊","project":"娘","content":"地狱磨砺SOP收集汇总第一次见你封面制作娘生成模型选择视频及分镜制作","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-10","name":"龙婧","project":"风马旗","content":"补充资产抽取片段3段","reviewer":"龙婧","status":"通过"},{"date":"2026-08-11","name":"林洛逸","project":"梁林之路","content":"补充资产17个抽卡13段视频剪辑30s","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-11","name":"杜磊","project":"娘","content":"娘生成模型选择视频及分镜制作","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-11","name":"龙婧","project":"风马旗","content":"补充资产抽取片段7段","reviewer":"龙婧","status":"通过"},{"date":"2026-08-12","name":"林洛逸","project":"梁林之路","content":"补充资产20个抽卡28段视频剪辑1分10秒","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-12","name":"杜磊","project":"娘","content":"娘视频分镜制作剧本大修剪辑大修","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-12","name":"龙婧","project":"风马旗","content":"补充资产抽取片段7段","reviewer":"龙婧","status":"通过"},{"date":"2026-08-13","name":"林洛逸","project":"梁林之路","content":"补充资产15个抽卡19段视频剪辑1分50秒","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-13","name":"杜磊","project":"娘","content":"娘视频分镜制作剧本大修剪辑大修","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-13","name":"龙婧","project":"风马旗","content":"补充资产抽取片段12段美区加拿大区互动评论","reviewer":"龙婧","status":"通过"},{"date":"2026-08-14","name":"林洛逸","project":"梁林之路","content":"补充资产5个抽卡8段视频饥饿的诸神2剧本修改","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-14","name":"杜磊","project":"白方礼","content":"","reviewer":"林洛逸","status":""},{"date":"2026-08-14","name":"龙婧","project":"风马旗","content":"补充资产抽取片段一夜承欢补充切片x10","reviewer":"龙婧","status":"通过"},{"date":"2026-08-15","name":"林洛逸","project":"梁林之路","content":"补充资产10个抽卡20段视频剪辑2分30秒饥饿的诸神2资产对接","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-15","name":"杜磊","project":"白方礼","content":"白方礼视频生成白方礼视频剪辑总时长2分22秒视频封面制作","reviewer":"林洛逸","status":""},{"date":"2026-08-15","name":"龙婧","project":"风马旗","content":"补充资产抽取片段","reviewer":"龙婧","status":"通过"},{"date":"2026-08-17","name":"林洛逸","project":"梁林之路","content":"补充资产23个抽卡33段视频剪辑4分04秒对接饥饿的诸神2","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-17","name":"杜磊","project":"请假","content":"请假","reviewer":"沈屯","status":"通过"},{"date":"2026-08-17","name":"龙婧","project":"风马旗","content":"补充资产抽取片段","reviewer":"龙婧","status":"通过"},{"date":"2026-08-17","name":"孙佩宁","project":"运营","content":"用豆包完成一夜承欢每集TikTok英文热评刷剧+评论维护TK评论区完成电脑上已有的20集成片的无介质版视频与字幕导出并将无介质视频转2k视频","reviewer":"龙婧","status":"通过"},{"date":"2026-08-18","name":"林洛逸","project":"梁林之路","content":"补充资产15个抽卡23段视频剪辑5分04秒对接饥饿的诸神2","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-18","name":"杜磊","project":"一夜承欢2","content":"一夜承欢2新增人物场景资产制作第5集视频抽卡视频剪辑时长1分35秒抽卡12个片段","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-18","name":"龙婧","project":"一夜承欢2","content":"上午剧本核查下午制作一夜承欢2第11集补充人物资产10个抽取片段11个完成剪辑1分51秒","reviewer":"龙婧","status":"通过"},{"date":"2026-08-19","name":"林洛逸","project":"梁林之路","content":"补充资产抽卡视频剪辑上集2分08秒下集3分11秒","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-19","name":"杜磊","project":"一夜承欢2","content":"一夜承欢2人物场景分镜图资产制作第6集视频抽卡视频剪辑时长1分56秒第7集视频抽卡视频剪辑时长1分43秒","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-19","name":"龙婧","project":"一夜承欢2","content":"一夜承欢2第12集第13集制作补充场景资产2个道具资产1个抽取片段12+8完成剪辑12集1分31秒13集2分钟风马旗视频修改剪辑","reviewer":"龙婧","status":"通过"},{"date":"2026-08-20","name":"林洛逸","project":"重庆之眼","content":"建筑短片补充资产图32张","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-20","name":"杜磊","project":"一夜承欢2","content":"一夜承欢2人物场景分镜图资产制作第8集视频抽卡视频剪辑时长1分04秒第9集视频抽卡视频剪辑时长1分17秒","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-20","name":"龙婧","project":"一夜承欢2","content":"一夜承欢2第14集第15集制作补充场景资产6个道具资产2个完成剪辑14集1分55秒第15集1分37秒西藏文旅视频剪辑1分钟","reviewer":"龙婧","status":"通过"},{"date":"2026-08-21","name":"林洛逸","project":"重庆之眼","content":"建筑短片补充资产图16张","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-21","name":"杜磊","project":"一夜承欢2","content":"一夜承欢2人物场景分镜图资产制作第8集视频抽卡视频剪辑时长1分04秒第9集视频抽卡视频剪辑时长1分17秒第19集视频抽卡剪辑","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-21","name":"龙婧","project":"重庆之眼","content":"10-14点制作重庆之眼建筑电影小样抽取片段8条14-19点制作一夜承欢2第16集补充资产人物资产2个场景资产4个抽取片段9条剪辑时长1分29秒","reviewer":"龙婧","status":"通过"},{"date":"2026-08-22","name":"杜磊","project":"一夜承欢2","content":"一夜承欢2人物场景分镜图资产制作第20集视频抽卡视频剪辑第1集视频抽卡视频剪辑第2集视频抽卡剪辑","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-22","name":"龙婧","project":"乌兰巴托项目","content":"剧本+第一轮沟通汇报文本","reviewer":"龙婧","status":"通过"},{"date":"2026-08-21","name":"杜磊","project":"一夜承欢2","content":"一夜承欢2人物场景分镜图资产制作第3集视频抽卡视频剪辑第21集视频抽卡视频剪辑第22集视频抽卡剪辑","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-24","name":"林洛逸","project":"重庆之眼","content":"建筑短片补充资产图30张抽卡视频14段","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-24","name":"杜磊","project":"一夜承欢2","content":"一夜承欢2人物场景分镜图资产制作第8集视频抽卡视频剪辑时长1分04秒第18集视频抽卡视频剪辑时长1分17秒第19集视频抽卡剪辑第30集视频抽卡剪辑","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-24","name":"龙婧","project":"乌兰巴托项目","content":"剧本修改+构通汇报文本+前期风物分镜图制作一夜承欢2人物素材图修改8张","reviewer":"龙婧","status":"通过"},{"date":"2026-08-25","name":"林洛逸","project":"重庆之眼","content":"建筑短片补充资产图22张抽卡视频23段总剪辑30s","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-25","name":"杜磊","project":"一夜承欢2","content":"一夜承欢2人物场景分镜图资产制作第26集视频抽卡视频剪辑第27集视频抽卡剪辑第28集视频抽卡剪辑","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-25","name":"龙婧","project":"乌兰巴托项目","content":"一夜承欢2人物增加6组效果图制作+视频抽卡+剪辑前期DEMO24秒","reviewer":"龙婧","status":"通过"},{"date":"2026-08-26","name":"林洛逸","project":"重庆之眼","content":"建筑短片制作分镜图视频抽卡+剪辑同凯达会议沟通","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-26","name":"杜磊","project":"一夜承欢2","content":"一夜承欢2人物场景分镜图资产制作第29集视频抽卡视频剪辑第30集视频抽卡剪辑第31集视频抽卡剪辑","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-26","name":"龙婧","project":"乌兰巴托项目","content":"建筑短片制作剧本更新+视频抽卡+剪辑2分钟","reviewer":"龙婧","status":"通过"},{"date":"2026-08-27","name":"林洛逸","project":"重庆之眼","content":"建筑短片制作分镜图视频抽卡+剪辑","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-27","name":"杜磊","project":"一夜承欢2","content":"一夜承欢2人物场景分镜图资产制作第32集视频抽卡视频剪辑第33集视频抽卡剪辑第34集视频抽卡剪辑","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-27","name":"龙婧","project":"乌兰巴托项目","content":"建筑短片制作视频抽卡+剪辑调整1分46秒","reviewer":"龙婧","status":"通过"},{"date":"2026-08-28","name":"林洛逸","project":"南山竞赛","content":"南山竞赛短片剧本及脚本编写","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-28","name":"杜磊","project":"一夜承欢2","content":"一夜承欢2人物场景分镜图资产制作第35集视频抽卡视频剪辑第36集视频抽卡剪辑第37集视频抽卡剪辑","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-28","name":"龙婧","project":"调休","content":"调休","reviewer":"沈屯","status":""},{"date":"2026-08-29","name":"林洛逸","project":"南山竞赛","content":"南山竞赛短片剧本及脚本修改人物场景道具资产制作","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-29","name":"杜磊","project":"一夜承欢2","content":"一夜承欢2人物场景分镜图资产制作第38集视频抽卡视频剪辑第39集视频抽卡剪辑第40集视频抽卡剪辑","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-29","name":"龙婧","project":"调休","content":"调休","reviewer":"沈屯","status":""},{"date":"2026-08-29","name":"孙佩宁","project":"玫瑰侠盗抖音","content":"玫瑰侠盗第6集剪辑配字幕水印11-12集合封面文案","reviewer":"沈屯","status":""},{"date":"2026-08-31","name":"林洛逸","project":"南山竞赛","content":"南山竞赛短片剧本及脚本修改人物场景道具资产制作","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-31","name":"杜磊","project":"一夜承欢2","content":"一夜承欢2剧集收尾超分切片制作封面制作","reviewer":"林洛逸","status":"通过"},{"date":"2026-08-31","name":"龙婧","project":"一夜承欢2","content":"第17集制作抽卡4段剪辑1分43秒第二部超前预告剪辑1分41秒封面根据领导意见ps调整","reviewer":"龙婧","status":"通过"},{"date":"2026-08-31","name":"孙佩宁","project":"玫瑰侠盗抖音","content":"玫瑰侠盗第78集剪辑配字幕水印封面文案","reviewer":"沈屯","status":""},{"date":"2026-09-01","name":"林洛逸","project":"血色荆棘","content":"短剧人物场景道具资产制作","reviewer":"林洛逸","status":"通过"},{"date":"2026-09-01","name":"杜磊","project":"血色荆棘","content":"短剧人物场景道具资产制作","reviewer":"林洛逸","status":"通过"},{"date":"2026-09-01","name":"龙婧","project":"杭州武林银泰项目","content":"一夜承欢2网盘项目整理提资预告片2段片段剪辑替换修改方案文本前期分析9页","reviewer":"龙婧","status":"通过"},{"date":"2026-09-01","name":"孙佩宁","project":"玫瑰侠盗抖音","content":"玫瑰侠盗第910集剪辑配字幕水印17-18集19-20集合封面文案","reviewer":"沈屯","status":""},{"date":"2026-09-02","name":"林洛逸","project":"血色荆棘","content":"建筑短片分镜图制作同凯达会议沟通短剧人物场景道具资产制作","reviewer":"林洛逸","status":"通过"},{"date":"2026-09-02","name":"杜磊","project":"血色荆棘","content":"短剧人物场景道具资产制作","reviewer":"林洛逸","status":"通过"},{"date":"2026-09-02","name":"龙婧","project":"杭州武林银泰项目","content":"方案文本前期分析修改及新增6页","reviewer":"龙婧","status":"通过"},{"date":"2026-09-02","name":"孙佩宁","project":"玫瑰侠盗抖音","content":"玫瑰侠盗第11集剪辑配字幕水印21-22集合封面文案","reviewer":"沈屯","status":""},{"date":"2026-09-03","name":"林洛逸","project":"血色荆棘","content":"建筑短片分镜图制作同凯达会议沟通短剧抽卡加剪辑19集时长1分20秒","reviewer":"林洛逸","status":"通过"},{"date":"2026-09-03","name":"杜磊","project":"南山竞赛","content":"南山竞赛短片分镜图制作视频抽卡短剧视频抽卡加剪辑共制作第1112集","reviewer":"林洛逸","status":"通过"},{"date":"2026-09-03","name":"龙婧","project":"杭州武林银泰项目","content":"方案文本修改及新增共12页前期分析及室内屋顶花园意向方案","reviewer":"龙婧","status":"通过"},{"date":"2026-09-03","name":"孙佩宁","project":"玫瑰侠盗抖音","content":"玫瑰侠盗第12集剪辑配字幕水印23-24集合封面文案","reviewer":"沈屯","status":""},{"date":"2026-09-04","name":"林洛逸","project":"血色荆棘","content":"建筑短片室内参考图收集短剧抽卡加剪辑18集时长1分11秒20集时长57秒","reviewer":"林洛逸","status":"通过"},{"date":"2026-09-04","name":"杜磊","project":"南山竞赛","content":"南山竞赛短片分镜图制作视频抽卡短剧视频抽卡加剪辑共制作第1213集","reviewer":"林洛逸","status":"通过"},{"date":"2026-09-04","name":"龙婧","project":"杭州武林银泰效果图制作","content":"效果图AI插卡78张","reviewer":"龙婧","status":"通过"},{"date":"2026-09-04","name":"孙佩宁","project":"玫瑰侠盗抖音","content":"玫瑰侠盗第13集剪辑配字幕水印25-26集合风马旗加水印打包压缩包","reviewer":"沈屯","status":""},{"date":"2026-09-07","name":"林洛逸","project":"血色荆棘","content":"","reviewer":"","status":""},{"date":"2026-09-07","name":"杜磊","project":"南山竞赛","content":"","reviewer":"","status":""},{"date":"2026-09-07","name":"龙婧","project":"DL-梦之城-建筑电影","content":"","reviewer":"","status":""}];
 const CAT_MAP = {"一夜承欢": "短剧", "一夜承欢2": "短剧", "暗夜玫瑰": "短剧", "血色荆棘": "短剧", "换心迷局": "短剧", "玫瑰侠盗抖音": "短剧", "外包短剧": "短剧", "饥饿的诸神": "短片", "梁林之路": "短片", "南山竞赛": "短片", "白方礼": "短片", "娘": "短片", "余响": "短片", "第一次见你": "短片", "风马旗": "短片", "短片": "短片", "重庆之眼": "建筑项目", "迪拜高层建筑电影": "建筑项目", "乌兰巴托项目": "建筑项目", "杭州武林银泰项目": "建筑项目", "杭州武林银泰效果图制作": "建筑项目", "DL-梦之城-建筑电影": "建筑微电影", "运营": "运营", "未完成的关卡": "其他"};
@@ -244,6 +338,8 @@ const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIs
 const TABLE = 'daily_reports';
 let data = [];
 let editIndex = -1;
+let tsEditId = null;
+let pjEditId = null;
 
 function supaHeaders(){ return {'apikey':SUPA_ANON,'Authorization':'Bearer '+SUPA_ANON,'Content-Type':'application/json'}; }
 
@@ -271,6 +367,49 @@ async function apiDelete(id){
   const res = await fetch(SUPA_URL+'/rest/v1/'+TABLE+'?id=eq.'+id, {method:'DELETE', headers:supaHeaders()});
   if(!res.ok){ const e=await res.json().catch(()=>({})); throw new Error(e.message||'删除失败'); }
 }
+
+// ===== 项目号 & 工时台账 相关 =====
+let projects = [];   // [{id, code, name, category}]
+let timesheets = []; // [{id, date, name, project_code, hours, overtime, remark}]
+
+async function fetchProjects(){
+  const res = await fetch(SUPA_URL+'/rest/v1/projects?select=*&order=code.asc', {headers:supaHeaders()});
+  if(!res.ok) throw new Error('项目加载失败');
+  return await res.json();
+}
+async function fetchTimesheets(){
+  const res = await fetch(SUPA_URL+'/rest/v1/timesheets?select=*&order=date.asc,id.asc', {headers:supaHeaders()});
+  if(!res.ok) throw new Error('工时加载失败');
+  return await res.json();
+}
+async function apiInsertPj(rec){
+  const res = await fetch(SUPA_URL+'/rest/v1/projects', {method:'POST', headers:{...supaHeaders(),'Prefer':'return=representation'}, body:JSON.stringify(rec)});
+  if(!res.ok){ const e=await res.json().catch(()=>({})); throw new Error(e.message||'新增项目失败'); }
+  const r=await res.json(); return r[0];
+}
+async function apiUpdatePj(id, rec){
+  const res = await fetch(SUPA_URL+'/rest/v1/projects?id=eq.'+id, {method:'PATCH', headers:supaHeaders(), body:JSON.stringify(rec)});
+  if(!res.ok){ const e=await res.json().catch(()=>({})); throw new Error(e.message||'更新项目失败'); }
+}
+async function apiDeletePj(id){
+  const res = await fetch(SUPA_URL+'/rest/v1/projects?id=eq.'+id, {method:'DELETE', headers:supaHeaders()});
+  if(!res.ok){ const e=await res.json().catch(()=>({})); throw new Error(e.message||'删除项目失败'); }
+}
+async function apiInsertTs(rec){
+  const res = await fetch(SUPA_URL+'/rest/v1/timesheets', {method:'POST', headers:{...supaHeaders(),'Prefer':'return=representation'}, body:JSON.stringify(rec)});
+  if(!res.ok){ const e=await res.json().catch(()=>({})); throw new Error(e.message||'新增工时失败'); }
+  const r=await res.json(); return r[0];
+}
+async function apiUpdateTs(id, rec){
+  const res = await fetch(SUPA_URL+'/rest/v1/timesheets?id=eq.'+id, {method:'PATCH', headers:supaHeaders(), body:JSON.stringify(rec)});
+  if(!res.ok){ const e=await res.json().catch(()=>({})); throw new Error(e.message||'更新工时失败'); }
+}
+async function apiDeleteTs(id){
+  const res = await fetch(SUPA_URL+'/rest/v1/timesheets?id=eq.'+id, {method:'DELETE', headers:supaHeaders()});
+  if(!res.ok){ const e=await res.json().catch(()=>({})); throw new Error(e.message||'删除工时失败'); }
+}
+function pjByCode(code){ return projects.find(p=>p.code===code); }
+function pjNameByCode(code){ const p=pjByCode(code); return p?p.name:code; }
 
 const PALETTE = ['#2e75b6','#ed7d31','#70ad47','#ffc000','#5b9bd5','#7030a0','#c0504d','#4bacc6','#f79646','#9bbb59'];
 const CAT_COLOR = {'短剧':'#2e75b6','短片':'#5b9bd5','建筑项目':'#ed7d31','建筑微电影':'#7030a0','运营':'#70ad47','其他':'#9aa3ad'};
@@ -519,6 +658,38 @@ document.getElementById('btnClear').onclick=async ()=>{
 };
 document.getElementById('fSearch').oninput=()=>{ renderCards(); renderTable(); renderCharts(); };
 
+// ===== 工时/项目 事件绑定 =====
+function populateTsSelects(){
+  const months=[...new Set(timesheets.map(t=>monthOf(t.date)).filter(Boolean))].sort();
+  const names=[...new Set(timesheets.map(t=>t.name).filter(Boolean))].sort();
+  const cm=document.getElementById('tsMonth').value, cn=document.getElementById('tsName').value;
+  document.getElementById('tsMonth').innerHTML='<option value="">全部月份</option>'+months.map(m=>`<option>${m}</option>`).join('');
+  document.getElementById('tsName').innerHTML='<option value="">全部人员</option>'+names.map(n=>`<option>${n}</option>`).join('');
+  document.getElementById('tsMonth').value=cm; document.getElementById('tsName').value=cn;
+  const com=document.getElementById('coMonth').value;
+  document.getElementById('coMonth').innerHTML='<option value="">全部月份</option>'+months.map(m=>`<option>${m}</option>`).join('');
+  document.getElementById('coMonth').value=com;
+  // 项目号下拉（用于新增工时时选择）
+  const pm=document.getElementById('tsmProj').value;
+  document.getElementById('tsmProj').innerHTML='<option value="">选择项目号</option>'+projects.slice().sort((a,b)=>(a.code||'').localeCompare(b.code||'')).map(p=>`<option value="${esc(p.code)}">${esc(p.code)} ${esc(p.name)}</option>`).join('');
+  document.getElementById('tsmProj').value=pm;
+  document.getElementById('tsmName').innerHTML=getNames().map(n=>`<option>${n}</option>`).join('');
+  document.getElementById('catList').innerHTML=CAT_ORDER.map(c=>`<option value="${esc(c)}">`).join('');
+}
+document.getElementById('tsAdd').onclick=()=>{ populateTsSelects(); openTsModal(null); };
+document.getElementById('tsReset').onclick=()=>{ document.getElementById('tsMonth').value=''; document.getElementById('tsName').value=''; renderTimesheet(); };
+document.getElementById('tsMonth').onchange=renderTimesheet;
+document.getElementById('tsName').onchange=renderTimesheet;
+document.getElementById('coReset').onclick=()=>{ document.getElementById('coMonth').value=''; renderCost(); };
+document.getElementById('coMonth').onchange=renderCost;
+document.getElementById('pjAdd').onclick=()=>{ document.getElementById('catList').innerHTML=CAT_ORDER.map(c=>`<option value="${esc(c)}">`).join(''); openPjModal(null); };
+document.getElementById('tsBtnCancel').onclick=closeTsModal;
+document.getElementById('tsBtnSave').onclick=saveTsModal;
+document.getElementById('pjBtnCancel').onclick=closePjModal;
+document.getElementById('pjBtnSave').onclick=savePjModal;
+document.getElementById('tsModal').onclick=e=>{ if(e.target.id==='tsModal') closeTsModal(); };
+document.getElementById('pjModal').onclick=e=>{ if(e.target.id==='pjModal') closePjModal(); };
+
 function handleImport(e){
   const file = e.target.files[0];
   if(!file) return;
@@ -577,6 +748,220 @@ document.getElementById('btnExportJson').onclick=exportJSON;
 ['fMonth','fName'].forEach(id=>document.getElementById(id).onchange=renderAll);
 document.getElementById('modal').onclick=e=>{ if(e.target.id==='modal') closeModal(); };
 
+// ===== 标签页切换 =====
+function switchTab(name){
+  document.querySelectorAll('#navTabs button').forEach(b=>b.classList.toggle('active', b.dataset.view===name));
+  ['daily','timesheet','cost','projects'].forEach(v=>{
+    document.getElementById('view-'+v).style.display = (v===name)?'block':'none';
+  });
+  if(name==='timesheet') renderTimesheet();
+  if(name==='cost'){ renderCost(); setTimeout(()=>{ ['coChartHours','coChartProj'].forEach(id=>{const el=document.getElementById(id); if(el&&echarts.getInstanceByDom(el)) echarts.getInstanceByDom(el).resize();}); },50); }
+  if(name==='projects') renderProjects();
+}
+document.querySelectorAll('#navTabs button').forEach(b=>b.onclick=()=>switchTab(b.dataset.view));
+
+// ===== 工时台账 =====
+function tsFiltered(){
+  const m = document.getElementById('tsMonth').value;
+  const n = document.getElementById('tsName').value;
+  let list = timesheets.slice();
+  if(m) list = list.filter(t=>monthOf(t.date)===m);
+  if(n) list = list.filter(t=>t.name===n);
+  return list;
+}
+function renderTimesheet(){
+  const mSel=document.getElementById('tsMonth'), nSel=document.getElementById('tsName');
+  const months=[...new Set(timesheets.map(t=>monthOf(t.date)).filter(Boolean))].sort();
+  const names=[...new Set(timesheets.map(t=>t.name).filter(Boolean))].sort();
+  const cm=mSel.value, cn=nSel.value;
+  mSel.innerHTML='<option value="">全部月份</option>'+months.map(m=>`<option>${m}</option>`).join('');
+  nSel.innerHTML='<option value="">全部人员</option>'+names.map(n=>`<option>${n}</option>`).join('');
+  mSel.value=cm; nSel.value=cn;
+
+  const list = tsFiltered();
+  const tbl=document.getElementById('tsTbl');
+  if(!list.length){
+    tbl.innerHTML='<tr><td colspan="7" style="text-align:center;color:#999;padding:28px">暂无工时记录，点击右上角「＋ 新增工时」开始填写</td></tr>';
+    return;
+  }
+  tbl.innerHTML=list.map(t=>{
+    const ot = t.overtime?`<span style="color:#e5484d;font-weight:600">+${t.overtime}</span>`:'<span style="color:#ccc">0</span>';
+    const total=(+t.hours||0)+(+t.overtime||0);
+    return `<tr>
+      <td>${esc(t.date||'')}</td>
+      <td>${esc(t.name||'')}</td>
+      <td>${esc(pjNameByCode(t.project_code))}</td>
+      <td style="text-align:center">${+t.hours||0}</td>
+      <td style="text-align:center">${ot}</td>
+      <td style="text-align:center;font-weight:600">${total}</td>
+      <td style="text-align:center"><button class="mini" data-act="edit" data-id="${t.id}">编辑</button> <button class="mini danger" data-act="del" data-id="${t.id}">删除</button></td>
+    </tr>`;
+  }).join('');
+  tbl.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    const id=b.dataset.id, rec=timesheets.find(t=>String(t.id)===id);
+    if(b.dataset.act==='edit') openTsModal(rec);
+    else if(b.dataset.act==='del') delTs(rec);
+  });
+}
+function openTsModal(rec){
+  tsEditId = rec?rec.id:null;
+  const pm=document.getElementById('tsmProj');
+  pm.innerHTML='<option value="">选择项目号</option>'+projects.slice().sort((a,b)=>(a.code||'').localeCompare(b.code||'')).map(p=>`<option value="${esc(p.code)}">${esc(p.code)} ${esc(p.name)}</option>`).join('');
+  document.getElementById('tsModalTitle').textContent = rec?'编辑工时':'新增工时';
+  document.getElementById('tsmDate').value = rec?rec.date:new Date().toISOString().slice(0,10);
+  document.getElementById('tsmName').innerHTML=getNames().map(n=>`<option>${n}</option>`).join('');
+  document.getElementById('tsmName').value = rec?rec.name:(getNames()[0]||'');
+  pm.value = rec?rec.project_code:'';
+  document.getElementById('tsmHours').value = rec?rec.hours:'';
+  document.getElementById('tsmOvertime').value = rec?rec.overtime:'';
+  document.getElementById('tsmRemark').value = rec?(rec.remark||''):'';
+  document.getElementById('tsModal').classList.add('show');
+}
+function closeTsModal(){ document.getElementById('tsModal').classList.remove('show'); }
+async function saveTsModal(){
+  const rec={
+    date:document.getElementById('tsmDate').value,
+    name:document.getElementById('tsmName').value,
+    project_code:document.getElementById('tsmProj').value.trim(),
+    hours:+document.getElementById('tsmHours').value||0,
+    overtime:+document.getElementById('tsmOvertime').value||0,
+    remark:document.getElementById('tsmRemark').value.trim()
+  };
+  if(!rec.date||!rec.name){ alert('请填写日期和姓名'); return; }
+  if(!rec.project_code){ alert('请选择项目号'); return; }
+  try{
+    if(tsEditId==null){ await apiInsertTs(rec); toast('已新增工时'); }
+    else { await apiUpdateTs(tsEditId, rec); toast('已保存工时'); }
+    closeTsModal(); await reloadTimesheets();
+  }catch(err){ alert('保存失败：'+err.message); }
+}
+async function delTs(rec){
+  if(!confirm('确定删除这条工时记录？')) return;
+  try{ await apiDeleteTs(rec.id); toast('已删除'); await reloadTimesheets(); }
+  catch(err){ alert('删除失败：'+err.message); }
+}
+
+// ===== 工时核算 =====
+function renderCost(){
+  const m = document.getElementById('coMonth').value;
+  const list = m?timesheets.filter(t=>monthOf(t.date)===m):timesheets;
+  const pmap={}; // project_code -> {hours, overtime, name}
+  list.forEach(t=>{
+    const c=t.project_code||'未分配';
+    if(!pmap[c]) pmap[c]={code:c,name:pjNameByCode(c),hours:0,overtime:0};
+    pmap[c].hours += (+t.hours||0);
+    pmap[c].overtime += (+t.overtime||0);
+  });
+  const rows=Object.values(pmap).sort((a,b)=>(b.hours+b.overtime)-(a.hours+a.overtime));
+
+  // 人员维度
+  const nmap={};
+  list.forEach(t=>{
+    const n=t.name||'未知';
+    if(!nmap[n]) nmap[n]={name:n,hours:0,overtime:0};
+    nmap[n].hours += (+t.hours||0);
+    nmap[n].overtime += (+t.overtime||0);
+  });
+  const nrows=Object.values(nmap).sort((a,b)=>(b.hours+b.overtime)-(a.hours+a.overtime));
+
+  // 图表：按项目工时（仅当视图可见时初始化，避免 0 尺寸）
+  const costVisible = document.getElementById('view-cost').style.display!=='none';
+  if(costVisible){
+    const inst=(id)=>echarts.getInstanceByDom(document.getElementById(id))||echarts.init(document.getElementById(id));
+    inst('coChartHours').setOption({
+      tooltip:{trigger:'axis',formatter:p=>p[0].name+'<br/>正常工时：'+p[0].value+'h'},
+      grid:{left:40,right:20,top:30,bottom:60},
+      xAxis:{type:'category',data:rows.map(r=>r.name),axisLabel:{rotate:30,interval:0}},
+      yAxis:{type:'value',name:'小时'},
+      series:[{type:'bar',data:rows.map(r=>r.hours),barMaxWidth:36,itemStyle:{color:function(p){return PALETTE[p.dataIndex%PALETTE.length]},borderRadius:[5,5,0,0]},label:{show:true,position:'top'}}]
+    });
+    const totalH=rows.reduce((s,r)=>s+r.hours,0), totalO=rows.reduce((s,r)=>s+r.overtime,0);
+    inst('coChartProj').setOption({
+      tooltip:{trigger:'item',formatter:'{b}: {c}h ({d}%)'},
+      legend:{bottom:0,type:'scroll'},
+      series:[{type:'pie',radius:['42%','68%'],itemStyle:{borderRadius:6,borderColor:'#fff',borderWidth:2},data:rows.map((r,i)=>({name:r.name,value:r.hours+r.overtime,itemStyle:{color:PALETTE[i%PALETTE.length]}})),label:{formatter:'{b} {c}h'}}]
+    });
+  }
+  const totalH=rows.reduce((s,r)=>s+r.hours,0), totalO=rows.reduce((s,r)=>s+r.overtime,0);
+
+  // 汇总
+  document.getElementById('coSummary').innerHTML =
+    '<span>总正常工时 <b style="color:#2e75b6">'+totalH+'h</b></span>'+
+    '<span>总加班工时 <b style="color:#e5484d">'+totalO+'h</b></span>'+
+    '<span>总工时 <b style="color:#70ad47">'+(totalH+totalO)+'h</b></span>'+
+    '<span>参与人数 <b>'+nrows.length+'</b></span>'+
+    '<span>项目数 <b>'+rows.length+'</b></span>';
+
+  // 表格
+  const tbl=document.getElementById('coTbl');
+  if(!rows.length){ tbl.innerHTML='<tr><td colspan="5" style="text-align:center;color:#999;padding:28px">暂无数据</td></tr>'; }
+  else tbl.innerHTML=rows.map(r=>`<tr>
+    <td>${esc(r.code)}</td><td>${esc(r.name)}</td>
+    <td style="text-align:center">${r.hours}</td>
+    <td style="text-align:center;color:#e5484d">${r.overtime}</td>
+    <td style="text-align:center;font-weight:600">${r.hours+r.overtime}</td>
+  </tr>`).join('');
+}
+
+// ===== 项目号管理 =====
+function renderProjects(){
+  const tbl=document.getElementById('pjTbl');
+  const list=projects.slice().sort((a,b)=>(a.code||'').localeCompare(b.code||''));
+  if(!list.length){ tbl.innerHTML='<tr><td colspan="5" style="text-align:center;color:#999;padding:28px">暂无项目，点击右上角「＋ 新增项目」创建项目号</td></tr>'; return; }
+  tbl.innerHTML=list.map(p=>`<tr>
+    <td style="font-weight:600">${esc(p.code||'')}</td>
+    <td>${esc(p.name||'')}</td>
+    <td>${esc(p.category||'')}</td>
+    <td style="text-align:center">${timesheets.filter(t=>t.project_code===p.code).reduce((s,t)=>s+(+t.hours||0)+(+t.overtime||0),0)}h</td>
+    <td style="text-align:center"><button class="mini" data-act="edit" data-id="${p.id}">编辑</button> <button class="mini danger" data-act="del" data-id="${p.id}">删除</button></td>
+  </tr>`).join('');
+  tbl.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    const id=b.dataset.id, rec=projects.find(p=>String(p.id)===id);
+    if(b.dataset.act==='edit') openPjModal(rec);
+    else if(b.dataset.act==='del') delPj(rec);
+  });
+}
+function openPjModal(rec){
+  pjEditId = rec?rec.id:null;
+  document.getElementById('pjModalTitle').textContent = rec?'编辑项目':'新增项目';
+  document.getElementById('pjmCode').value = rec?(rec.code||''):'';
+  document.getElementById('pjmName').value = rec?(rec.name||''):'';
+  document.getElementById('pjmCat').value = rec?(rec.category||''):'';
+  document.getElementById('pjModal').classList.add('show');
+}
+function closePjModal(){ document.getElementById('pjModal').classList.remove('show'); }
+async function savePjModal(){
+  const rec={
+    code:document.getElementById('pjmCode').value.trim(),
+    name:document.getElementById('pjmName').value.trim(),
+    category:document.getElementById('pjmCat').value.trim()
+  };
+  if(!rec.code||!rec.name){ alert('请填写项目号和项目名称'); return; }
+  try{
+    if(pjEditId==null){ await apiInsertPj(rec); toast('已新增项目'); }
+    else { await apiUpdatePj(pjEditId, rec); toast('已保存项目'); }
+    closePjModal(); await reloadProjects();
+  }catch(err){ alert('保存失败：'+err.message); }
+}
+async function delPj(rec){
+  if(!confirm('确定删除项目「'+rec.code+' '+rec.name+'」？')) return;
+  try{ await apiDeletePj(rec.id); toast('已删除'); await reloadProjects(); }
+  catch(err){ alert('删除失败：'+err.message); }
+}
+
+async function reloadTimesheets(){
+  timesheets = await fetchTimesheets();
+  renderTimesheet();
+  renderCost();
+  renderProjects();
+}
+async function reloadProjects(){
+  projects = await fetchProjects();
+  renderProjects();
+  renderTimesheet();
+  renderCost();
+}
+
 async function reloadData(){
   data = await fetchAll();
   populateSelects();
@@ -590,17 +975,21 @@ function subscribeRealtime(){
   try{
     const ws = new WebSocket('wss://txwpnjctwjzutltyyghv.supabase.co/realtime/v1/websocket?apikey='+SUPA_ANON+'&vsn=1.0.0');
     ws.onopen = ()=>{
-      ws.send(JSON.stringify({
-        type:'phx_join', topic:'realtime:public:'+TABLE,
-        payload:{config:{postgres_changes:[{event:'*',schema:'public',table:TABLE}]}},
-        ref:'1', join_ref:'1'
-      }));
+      ['daily_reports','projects','timesheets'].forEach((t,i)=>{
+        ws.send(JSON.stringify({
+          type:'phx_join', topic:'realtime:public:'+t,
+          payload:{config:{postgres_changes:[{event:'*',schema:'public',table:t}]}},
+          ref:String(i+1), join_ref:String(i+1)
+        }));
+      });
     };
     ws.onmessage = (ev)=>{
       const msg = JSON.parse(ev.data);
       if(msg.event === 'postgres_changes' || (msg.payload && msg.payload.data && msg.payload.type === 'postgres_changes')){
-        // 远程数据变更 → 重新拉取
-        reloadData();
+        const t = msg.payload && msg.payload.data && msg.payload.data.table || '';
+        if(t==='timesheets'){ reloadTimesheets(); }
+        else if(t==='projects'){ reloadProjects(); }
+        else { reloadData(); }
       }
     };
     ws.onerror = ()=>{};
@@ -616,6 +1005,8 @@ function subscribeRealtime(){
     populateSelects(); syncCatTabs(); renderProjTabs(); renderAll();
     toast('云端加载失败，已回退到本地默认数据');
   }
+  try{ await Promise.all([reloadProjects(), reloadTimesheets()]); }
+  catch(err){ console.error('项目/工时加载失败', err); }
   document.getElementById('fMonth').value='';
   document.getElementById('fName').value='';
   document.getElementById('fSearch').value='';
